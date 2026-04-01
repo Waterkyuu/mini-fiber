@@ -28,9 +28,9 @@ function createElement(type, props, ...children) {
 		type,
 		props: {
 			...props,
-			children: children.map((child) => {
-				typeof child === "object" ? child : createTextElement(child);
-			}),
+			children: children.map((child) =>
+				typeof child === "object" ? child : createTextElement(child)
+			),
 		},
 	};
 }
@@ -97,7 +97,7 @@ function updateDom(dom, prevProps, nextProps) {
 function workLoop(deadline) {
 	let shouldYield = false;
 
-	while (!shouldYield && deadline) {
+	while (!shouldYield && nextUnitWork && deadline) {
 		nextUnitWork = performUnitWork(nextUnitWork);
 		// If there is not enough time, simply pause and give way to the main thread
 		shouldYield = deadline.timeRemaining() < 1;
@@ -136,7 +136,7 @@ function performUnitWork(fiber) {
 
 function reconcileChild(wipFiber, childrenElements) {
 	let index = 0;
-	const oldChildFiber = wipFiber.alternate.child;
+	let oldChildFiber = wipFiber.alternate?.child;
 	let prevSibling = null;
 
 	while (index < childrenElements.length || oldChildFiber) {
@@ -176,8 +176,8 @@ function reconcileChild(wipFiber, childrenElements) {
 
 		// Update old child fiber ——> replace old silbing fiber
 		// Note: Element structure is diffrent from fiber structure
-		if (oldFiber) {
-			oldFiber = oldFiber.sibling;
+		if (oldChildFiber) {
+			oldChildFiber = oldChildFiber.sibling;
 		}
 
 		if (index === 0) {
@@ -193,7 +193,7 @@ function reconcileChild(wipFiber, childrenElements) {
 
 function commitRoot() {
 	deletions.forEach((oldFiber) => commitWork(oldFiber));
-	commitWork(fiber.child);
+	commitWork(wipRoot.child);
 	currenRoot = wipRoot;
 	wipRoot = null;
 }

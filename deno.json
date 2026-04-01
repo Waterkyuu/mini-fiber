@@ -1,12 +1,16 @@
 {
 	"tasks": {
-		"hook": "deno run --allow-read --allow-run --allow-write jsr:@vnphanquang/githooks/bin"
+		"hook": "deno run --allow-read --allow-run --allow-write jsr:@vnphanquang/githooks/bin",
+		"build": "deno run -A scripts/build.js",
+		"dev": "deno task build && deno run -A jsr:@std/http/file-server . --port 3000"
 	},
 	"fmt": {
 		"useTabs": true
 	},
+	"nodeModulesDir": "auto",
 	"imports": {
 		"@std/assert": "https://deno.land/std@0.210.0/assert/mod.ts",
-		"deno-dom": "https://deno.land/x/deno_dom/deno-dom-wasm.ts"
+		"deno-dom": "https://deno.land/x/deno_dom/deno-dom-wasm.ts",
+		"@swc/core": "npm:@swc/core@^1"
 	}
 }
