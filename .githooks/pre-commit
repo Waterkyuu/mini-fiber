@@ -1,0 +1,7 @@
+#!/bin/sh
+
+deno fmt || exit 1
+
+deno lint || exit 1
+
+git add .

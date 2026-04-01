@@ -1,6 +1,7 @@
 // Global variable
 let wipRoot = null;
 let nextUnitWork = null;
+let currenRoot = null;
 let deletions = [];
 
 /**
@@ -103,6 +104,7 @@ function workLoop(deadline) {
 	}
 
 	if (wipRoot && !nextUnitWork) {
+		commitRoot(wipRoot);
 	}
 
 	requestIdleCallback(workLoop);
@@ -189,7 +191,12 @@ function reconcileChild(wipFiber, childrenElements) {
 	}
 }
 
-function commitRoot() {}
+function commitRoot() {
+	deletions.forEach((oldFiber) => commitWork(oldFiber));
+	commitWork(fiber.child);
+	currenRoot = wipRoot;
+	wipRoot = null;
+}
 
 function commitWork(fiber) {
 	if (!fiber) return;
@@ -219,17 +226,42 @@ function commitWork(fiber) {
 	 * 		<Header>
 	 * </div>
 	 */
+
 	while (!domParentFiber.dom) {
 		domParentFiber = domParentFiber.parent;
 	}
 
 	const domParent = domParentFiber.dom;
 
-	if (fiber.effectTag === "PLACEMENT" && fiber.dom !== null) {
-		domParent;
+	if (fiber.effectTag === "PLACEMENT") {
+		domParent.appendChild(fiber.dom);
+	} else if (fiber.effectTag === "UPDATE") {
+		updateDom(fiber.dom, fiber.alternate.props, fiber.props);
+	} else if (fiber.effectTag === "DELETION") {
+		// commitDeletion(fiber, domParent);
+		domParent.removeChild(fiber.dom);
+		return;
 	}
 
 	// When commiting work, it cannot be interrupted, which is the opposite of rendering!
 	commitWork(fiber.child);
 	commitWork(fiber.sibling);
 }
+
+function render(element, container) {
+	wipRoot = {
+		dom: container,
+		props: {
+			children: [
+				element,
+			],
+		},
+		alternate: currenRoot,
+	};
+
+	deletions = [];
+
+	nextUnitWork = wipRoot;
+}
+
+export { createElement, render };

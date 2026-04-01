@@ -1,0 +1,12 @@
+{
+	"tasks": {
+		"hook": "deno run --allow-read --allow-run --allow-write jsr:@vnphanquang/githooks/bin"
+	},
+	"fmt": {
+		"useTabs": true
+	},
+	"imports": {
+		"@std/assert": "https://deno.land/std@0.210.0/assert/mod.ts",
+		"deno-dom": "https://deno.land/x/deno_dom/deno-dom-wasm.ts"
+	}
+}
